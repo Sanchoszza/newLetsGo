@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "862483013835",
+    "project_id": "letsgo2-75dd0",
+    "storage_bucket": "letsgo2-75dd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:862483013835:android:57337f9490423fbc0ffb4e",
+        "android_client_info": {
+          "package_name": "com.android.letsgo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "862483013835-f5vk95s2v370te5goqedcql1c2dt0krf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD4yUZiE5pAL4dIJlWhBTvh6QZNLYsFNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "862483013835-f5vk95s2v370te5goqedcql1c2dt0krf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
