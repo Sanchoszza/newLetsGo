@@ -2,7 +2,6 @@ package com.android.letsgo.fragment
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +23,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -32,23 +33,21 @@ import com.android.letsgo.R
 
 class RegistrationFragment : Fragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        return view
-    }
-
     companion object {
         @JvmStatic
       fun newInstance(): RegistrationFragment = RegistrationFragment()
     }
 
+private fun getReg(){
+
+}
+
     @Composable
     fun RegistrationScreen() {
         var back = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
         val backgroundColor = Color(0xFFCDE5DC)
+        val mContent = LocalContext.current
+        var mText by remember { mutableStateOf("") }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,24 +87,26 @@ class RegistrationFragment : Fragment() {
                         .padding(horizontal = 16.dp)
                 ) {
                     TextField(
-                        value = "",
-                        onValueChange = { },
+                        value = mText,
+                        onValueChange = { mText = it},
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
                             .padding(bottom = 25.dp)
                             .background(color = Color(0xFFCDE5DC)),
+//                        label = { Text(text = "Enter Your Name") },
                         placeholder = { Text(text = stringResource(id = R.string.enter_name)) },
                         textStyle = TextStyle(color = Color.Black),
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = backgroundColor
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = { },
+                        value = mText,
+                        onValueChange = { mText = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -123,8 +124,8 @@ class RegistrationFragment : Fragment() {
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = { },
+                        value = mText,
+                        onValueChange = { mText = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -135,12 +136,13 @@ class RegistrationFragment : Fragment() {
                         visualTransformation = PasswordVisualTransformation(),
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = backgroundColor
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
 
                     TextField(
-                        value = "",
-                        onValueChange = { },
+                        value = mText,
+                        onValueChange = { mText = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -151,11 +153,12 @@ class RegistrationFragment : Fragment() {
                         visualTransformation = PasswordVisualTransformation(),
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = backgroundColor
-                        )
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
 
                     Button(
-                        onClick = { HomePageFragment.newInstance() },
+                        onClick = { getReg() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 25.dp, bottom = 10.dp)

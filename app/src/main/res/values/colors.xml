@@ -11,6 +11,7 @@
     <color name="color_for_background">#CEE6DD</color>
     <color name="color_for_reg">#93D1BF</color>
     <color name="color_for_enter_log">#5DC198</color>
+    <color name="color_for_bottom_bar">#F5F2F2</color>
 </resources>
 
 
