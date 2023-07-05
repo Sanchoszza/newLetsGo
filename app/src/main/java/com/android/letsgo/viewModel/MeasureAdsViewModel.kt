@@ -14,7 +14,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,19 +55,19 @@ class MeasureAdsViewModel : ViewModel() {
                 override fun onNext(documentSnapshots: QuerySnapshot) {
                     val data: MutableList<MeasureData> = ArrayList()
                     for (document in documentSnapshots.documents) {
-                        val name_measure = document.getString("name_measure")
-                        val place_measure = document.getString("place_measure")
-                        val date_start_measure = document.getString("date_start_measure")
-                        val time_start_measure = document.getString("time_start_measure")
-                        val description_measure = document.getString("description_measure")
-                        val coast_measure = document.getString("coast_measure")
+                        val nameMeasure = document.getString("name_measure")
+                        val placeMeasure = document.getString("place_measure")
+                        val dateStartMeasure = document.getString("date_start_measure")
+                        val timeStartMeasure = document.getString("time_start_measure")
+                        val descriptionMeasure = document.getString("description_measure")
+                        val coastMeasure = document.getString("coast_measure")
                         val lat = document.getString("lat")
                         val lon = document.getString("lon")
                         val imgUrl = document.getString("imgUrl")
-                        if(name_measure!=null && place_measure!=null && date_start_measure!=null && time_start_measure!=null && description_measure!=null &&
-                            coast_measure!=null  && lat !=null && lon !=null && imgUrl!=null)
-                            data.add(MeasureData(name_measure, place_measure, date_start_measure, time_start_measure,
-                                description_measure, coast_measure, lat.toFloat(),lon.toFloat(), imgUrl))
+                        if(nameMeasure!=null && placeMeasure!=null && dateStartMeasure!=null && timeStartMeasure!=null && descriptionMeasure!=null &&
+                            coastMeasure!=null  && lat !=null && lon !=null && imgUrl!=null)
+                            data.add(MeasureData(nameMeasure, placeMeasure, dateStartMeasure, timeStartMeasure,
+                                descriptionMeasure, coastMeasure, lat.toFloat(),lon.toFloat(), imgUrl))
 
                     }
 
@@ -79,17 +78,17 @@ class MeasureAdsViewModel : ViewModel() {
                     measures = measure
                 }
                 override fun onError(e: Throwable) {
-                    RxJavaPlugins.onError(e);
+                    RxJavaPlugins.onError(e)
                 }
                 override fun onComplete() {}
-            });
+            })
 
     }
 
     @Composable
     fun MeasureViewScreen(){
-        var back = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-        var currentList by remember { mutableStateOf(measures) }
+        val back = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+        val currentList by remember { mutableStateOf(measures) }
         Column(
             Modifier
                 .fillMaxSize()
@@ -115,7 +114,6 @@ class MeasureAdsViewModel : ViewModel() {
 
     @Composable
     fun MeasureAdsLazyScreen(data: List<MeasureData>){
-        val backgroundColor = Color(0xFFFFFFFF)
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             state = rememberLazyGridState(),
@@ -132,12 +130,12 @@ class MeasureAdsViewModel : ViewModel() {
                 ){
                     Column(modifier = Modifier
                         .fillMaxSize()) {
-                        Box() {
+                        Box {
                             Column(modifier = Modifier.padding(
                                 start = 8.dp,
                                 top = 4.dp,
                                 bottom = 8.dp)) {
-                                Row() {
+                                Row {
                                     Text(data[it].name_measure,
                                         fontSize = 23.sp,
                                         fontWeight = FontWeight.Bold,
@@ -146,12 +144,12 @@ class MeasureAdsViewModel : ViewModel() {
                                             top = 5.dp
                                         ))
                                 }
-                                Row() {
+                                Row {
                                     Text(data[it].time_start_measure,
                                         fontSize = 23.sp,
                                         modifier = Modifier.padding(start = 4.dp))
                                 }
-                                Row() {
+                                Row {
                                     Text(data[it].place_measure,
                                         fontSize = 23.sp,
                                         modifier = Modifier.padding(start = 4.dp))
