@@ -1,11 +1,11 @@
 package com.android.letsgo.fragment
 
+import android.content.ContentValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,22 +19,33 @@ import androidx.compose.ui.tooling.preview.Preview
 
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.ComposeView
 import com.android.letsgo.R
+import com.google.firebase.auth.FirebaseAuth
 
 
 class ForgotPassFragment : Fragment() {
+    private var auth: FirebaseAuth? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return view
+        return ComposeView(requireContext()).apply {
+            setContent {
+                ForgotPassScreen()
+            }
+        }
     }
 
     companion object {
@@ -43,7 +54,11 @@ class ForgotPassFragment : Fragment() {
     }
 
     @Composable
+    @Preview
     fun ForgotPassScreen() {
+        var valueLogin by remember {
+            mutableStateOf("")
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -93,7 +108,13 @@ class ForgotPassFragment : Fragment() {
                     )
 
                     Button(
-                        onClick = { },
+                        onClick = {
+                            if (TextUtils.isEmpty(valueLogin)) {
+                                Toast.makeText(context, "Введите e-mail", Toast.LENGTH_LONG).show()
+                            } else {
+                                resetPass(valueLogin)
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 30.dp, bottom = 10.dp)
@@ -111,10 +132,21 @@ class ForgotPassFragment : Fragment() {
         }
     }
 
-    @Preview
-    @Composable
-    fun PreviewForgotPassScreen() {
-        ForgotPassScreen()
+    private fun resetPass(login: String){
+        auth = FirebaseAuth.getInstance()
+        if (login != "" && login !=null) {
+            auth!!.sendPasswordResetEmail(login)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d(ContentValues.TAG, "Email sent.")
+                        Toast.makeText(activity, "Инструкции по восстановлению пароля\nотправлены на почту", Toast.LENGTH_LONG).show()
+                        activity?.supportFragmentManager?.popBackStack()
+                    } else {
+                        Toast.makeText(activity, "Произошла ошибка, повторите попытку позднее", Toast.LENGTH_LONG).show()
+
+                    }
+                }
+        } else Toast.makeText(context, "Введите почту!", Toast.LENGTH_LONG).show()
     }
 
 }

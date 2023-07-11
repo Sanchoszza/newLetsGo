@@ -31,6 +31,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import com.android.letsgo.R
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.ComposeView
+import com.android.letsgo.activity.MainActivity
 
 
 class StartAppFragment : Fragment() {
@@ -40,7 +42,11 @@ class StartAppFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return view
+        return ComposeView(requireContext()).apply {
+            setContent {
+                StartAppScreen()
+            }
+        }
     }
 
     companion object {
@@ -50,6 +56,7 @@ class StartAppFragment : Fragment() {
     }
 
     @Composable
+    @Preview
     fun StartAppScreen(){
         val shadowColor = Color(0xFF92D0BE)
         Box(
@@ -88,7 +95,7 @@ class StartAppFragment : Fragment() {
 //                            .padding(bottom = 55.dp, top = 50.dp)
 //                    )
                     Button(
-                        onClick = { LoginFragment.newInstance() },
+                        onClick = { (activity as MainActivity?)!!.replaceFragment(LoginFragment.newInstance(), true)  },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 25.dp, bottom = 10.dp)
@@ -103,7 +110,7 @@ class StartAppFragment : Fragment() {
                     }
 
                     Button(
-                        onClick = { RegistrationFragment.newInstance() },
+                        onClick = { (activity as MainActivity?)!!.replaceFragment(RegistrationFragment.newInstance(), true) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 25.dp, bottom = 10.dp)
@@ -121,9 +128,4 @@ class StartAppFragment : Fragment() {
         }
     }
 
-    @Preview
-    @Composable
-    fun PreviewStartApp(){
-        StartAppScreen()
-    }
 }

@@ -5,7 +5,7 @@ import android.net.Uri
 import com.android.letsgo.db.MeasureData
 import com.android.letsgo.utils.UploadPhotoStorageUtil
 import com.android.letsgo.utils.WriteRXFirebaseUtil
-import com.android.letsgo.view.AddAdsView
+import com.android.letsgo.view.AddMeasureAdsView
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -14,9 +14,9 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class AdsMeasurePresenter {
-    private var view: AddAdsView? = null
+    private var view: AddMeasureAdsView? = null
 
-    constructor(view: AddAdsView?){
+    constructor(view: AddMeasureAdsView?){
         this.view = view
     }
 

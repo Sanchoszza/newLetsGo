@@ -19,6 +19,9 @@
         android:theme="@style/Theme.LetsGo"
         tools:targetApi="31">
         <activity
+            android:name=".Welcome"
+            android:exported="false" />
+        <activity
             android:name=".AdsActivity"
             android:exported="false" />
         <activity

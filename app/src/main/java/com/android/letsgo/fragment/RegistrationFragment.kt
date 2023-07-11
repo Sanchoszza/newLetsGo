@@ -1,5 +1,8 @@
 package com.android.letsgo.fragment
 
+import android.app.ProgressDialog
+import android.content.Intent
+import android.content.res.ColorStateList
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
@@ -14,40 +17,90 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import com.android.letsgo.R
+import com.android.letsgo.activity.StartActivity
+import com.android.letsgo.db.PersonData
+import com.android.letsgo.db.UserRegData
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class RegistrationFragment : Fragment() {
 
+    private var dbUsers: CollectionReference? = null
+    private var db: FirebaseFirestore? = null
+    private var databaseReference: DatabaseReference? = null
+    private var mDatabase: FirebaseDatabase? = null
+    private var mAuth: FirebaseAuth? = null
+
+    private var progressBar: ProgressDialog? = null
+
+    private val TAG = "CreateAccountActivity"
     companion object {
         @JvmStatic
       fun newInstance(): RegistrationFragment = RegistrationFragment()
     }
 
-private fun getReg(){
-
-}
+    private var auth: FirebaseAuth? = null
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                RegistrationScreen()
+            }
+        }
+    }
 
     @Composable
+    @Preview
     fun RegistrationScreen() {
-        var back = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+        val back = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
         val backgroundColor = Color(0xFFCDE5DC)
-        val mContent = LocalContext.current
-        var mText by remember { mutableStateOf("") }
+        var valueLogin by remember {
+            mutableStateOf("")
+        }
+        var valueName by remember {
+            mutableStateOf("")
+        }
+        var valuePass by remember {
+            mutableStateOf("")
+        }
+        var valueConfPass by remember {
+            mutableStateOf("")
+        }
+        var showPassword by remember {
+            mutableStateOf(false)
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,8 +140,8 @@ private fun getReg(){
                         .padding(horizontal = 16.dp)
                 ) {
                     TextField(
-                        value = mText,
-                        onValueChange = { mText = it},
+                        value = valueName,
+                        onValueChange = { newText -> valueName = newText },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -105,8 +158,8 @@ private fun getReg(){
                     )
 
                     TextField(
-                        value = mText,
-                        onValueChange = { mText = it },
+                        value = valueLogin,
+                        onValueChange = { newText -> valueLogin = newText },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -124,8 +177,8 @@ private fun getReg(){
                     )
 
                     TextField(
-                        value = mText,
-                        onValueChange = { mText = it },
+                        value = valuePass,
+                        onValueChange = { newText -> valuePass = newText },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -133,16 +186,24 @@ private fun getReg(){
                         placeholder = { Text(text = stringResource(id = R.string.enter_password)) },
                         textStyle = TextStyle(color = Color.Black),
                         singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = backgroundColor
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                Icon(
+                                    imageVector = if (showPassword) Icons.Default.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = if (showPassword) "Show Password" else "Hide Password"
+                                )
+                            }
+                        }
                     )
 
                     TextField(
-                        value = mText,
-                        onValueChange = { mText = it },
+                        value = valueConfPass,
+                        onValueChange = { newText -> valueConfPass = newText },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
@@ -150,15 +211,32 @@ private fun getReg(){
                         placeholder = { Text(text = stringResource(id = R.string.config_password)) },
                         textStyle = TextStyle(color = Color.Black),
                         singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         colors = TextFieldDefaults.textFieldColors(
                             backgroundColor = backgroundColor
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                Icon(
+                                    imageVector = if (showPassword) Icons.Default.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = if (showPassword) "Show Password" else "Hide Password"
+                                )
+                            }
+                        }
                     )
 
                     Button(
-                        onClick = { getReg() },
+                        onClick = {
+                            if (TextUtils.isEmpty(valueName)
+                                || TextUtils.isEmpty(valueLogin)
+                                || TextUtils.isEmpty(valuePass)
+                                || TextUtils.isEmpty(valueConfPass)) {
+                                Toast.makeText(context, "Заполните все поля", Toast.LENGTH_LONG).show()
+                            } else {
+                                regNew(valueName, valueLogin, valuePass, valueConfPass)
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 25.dp, bottom = 10.dp)
@@ -196,10 +274,92 @@ private fun getReg(){
             }
         }
     }
-    @Preview
-    @Composable
-    fun PreviewRegistrationScreen() {
-        RegistrationScreen()
+
+
+    fun regNew(name: String, login: String, password: String, confPass: String){
+
+        progressBar = ProgressDialog(getContext())
+
+        mDatabase = FirebaseDatabase.getInstance()
+        databaseReference = mDatabase!!.reference!!.child("Users")
+        mAuth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance();
+
+        if (!TextUtils.isEmpty(name)  && !TextUtils.isEmpty(login)
+            && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(confPass)
+        ) {
+            if(confPass.equals(password)) {
+
+                mAuth!!.createUserWithEmailAndPassword(login!!, password!!)
+                    .addOnCompleteListener() { task ->
+                        progressBar!!.hide()
+
+                        if (task.isSuccessful) {
+                            Log.d(TAG, "createUserWithEmail:success")
+
+                            val userId = mAuth!!.currentUser!!.uid
+
+                            verifyEmail()
+                            dbUsers = db?.collection("Users")
+                            val currentUserIdBb = databaseReference!!.child(userId)
+
+                            currentUserIdBb.child("name").setValue(name)
+                            currentUserIdBb.child("email").setValue(login)
+                            currentUserIdBb.child("password").setValue(password)
+
+                            val data = UserRegData(name, login, password)
+
+                            dbUsers?.add(data)
+                                ?.addOnSuccessListener(OnSuccessListener<DocumentReference?> {
+                                    Toast.makeText(
+                                        context,
+                                        "Аккаунт успешно создан!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                })?.addOnFailureListener(OnFailureListener {
+                                    Toast.makeText(
+                                        context,
+                                        "Произошла ошибка, попробуйте позднее!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                })
+                            updateUserInfoAndUi()
+                        } else {
+                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                            Toast.makeText(
+                                getContext(),
+                                "Authentication failed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    }
+            }else{
+                Toast.makeText(context, "Пароли не совпадают!", Toast.LENGTH_SHORT).show()
+            }
+        } else{
+            Toast.makeText(getContext(), "Заполните все поля", Toast.LENGTH_SHORT).show()
+        }
     }
 
+    private fun updateUserInfoAndUi(){
+        val intent = Intent(getContext(), StartActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        startActivity(intent)
+    }
+    private fun verifyEmail(){
+        val mUser = mAuth!!.currentUser
+        mUser!!.sendEmailVerification().
+        addOnCompleteListener() {
+                task ->
+            if(task.isSuccessful){
+                Toast.makeText(getContext(), "Verification email sent to " +
+                        mUser.getEmail(), Toast.LENGTH_SHORT).show()
+            } else{
+                Log.e(TAG, "sendEmailVerification", task.exception)
+                Toast.makeText(getContext(), "Failed to send verification email",
+                    Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

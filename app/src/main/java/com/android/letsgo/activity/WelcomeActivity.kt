@@ -34,9 +34,9 @@ class WelcomeActivity : AppCompatActivity() {
     fun WelcomeActivityScreen() {
         val images = listOf(
             R.drawable.home to R.drawable.homepressed,
-            R.drawable.history to R.drawable.historypressed,
-            R.drawable.heart to R.drawable.heartpressed,
-            R.drawable.massage to R.drawable.massagepressed,
+            R.drawable.travels to R.drawable.travelspressed,
+            R.drawable.measure to R.drawable.measurepressed,
+            R.drawable.map to R.drawable.mappressed,
             R.drawable.profile to R.drawable.profilepressed
         )
 

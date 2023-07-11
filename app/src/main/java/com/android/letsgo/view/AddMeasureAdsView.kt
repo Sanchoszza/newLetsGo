@@ -1,6 +1,6 @@
 package com.android.letsgo.view
 
-interface AddAdsView {
+interface AddMeasureAdsView {
     fun sendMessage(str: String)
 
     fun onUploadSuccess(str: String)
