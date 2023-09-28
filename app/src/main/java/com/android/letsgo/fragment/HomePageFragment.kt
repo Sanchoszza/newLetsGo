@@ -32,6 +32,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.android.letsgo.R
@@ -42,9 +43,13 @@ class HomePageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_page, container, false)
+    ): View {
+
+        return ComposeView(requireContext()).apply {
+            setContent {
+                HomePageScreen()
+            }
+        }
     }
 
     companion object {
@@ -52,5 +57,19 @@ class HomePageFragment : Fragment() {
         fun newInstance(): HomePageFragment = HomePageFragment()
     }
 
+    @Composable
+    @Preview
+    fun HomePageScreen(){
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Text(
+                text = "Home Page",
+                style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                color = Color.Black
+            )
+        }
+    }
 
 }

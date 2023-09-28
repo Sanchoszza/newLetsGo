@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.android.letsgo.R
 
 
@@ -21,5 +23,11 @@ class ProfileFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(): ProfileFragment = ProfileFragment()
+    }
+
+    @Composable
+    @Preview
+    fun ProfileScreen(){
+
     }
 }

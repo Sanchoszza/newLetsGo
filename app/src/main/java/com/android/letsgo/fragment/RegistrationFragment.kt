@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.android.letsgo.R
+import com.android.letsgo.activity.MainActivity
 import com.android.letsgo.activity.StartActivity
 import com.android.letsgo.db.PersonData
 import com.android.letsgo.db.UserRegData
@@ -267,7 +268,8 @@ class RegistrationFragment : Fragment() {
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(start = 5.dp)
-                                .clickable(onClick = {LoginFragment.newInstance()})
+                                .clickable(onClick = {(activity as MainActivity?)!!.replaceFragment(LoginFragment.newInstance(),
+                                    true)})
                         )
                     }
                 }

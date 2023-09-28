@@ -197,7 +197,8 @@ class LoginFragment : Fragment() {
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .padding(start = 5.dp)
-                                .clickable(onClick = {(activity as MainActivity?)!!.replaceFragment(RegistrationFragment.newInstance(), true)})
+                                .clickable(onClick = {(activity as MainActivity?)!!.replaceFragment(RegistrationFragment.newInstance(),
+                                    true)})
                         )
                     }
 

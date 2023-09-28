@@ -3,7 +3,7 @@ package com.android.letsgo.view
 import com.android.letsgo.db.MeasureData
 
 interface GetMeasureView {
-    fun message(str: String)
+    fun errorMessage(err: String?)
 
-    fun getAds(data: List<MeasureData>)
+    fun getInfoAds(data: List<MeasureData>)
 }
